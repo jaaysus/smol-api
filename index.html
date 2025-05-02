@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time API Response</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+
+        #response {
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            overflow: hidden;
+            font-size: 16px;
+            min-height: 150px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Jay sus smoll api</h1>
+
+    <div class="input-group">
+        <input type="text" id="baseUrl" placeholder="Enter the base URL..." />
+    </div>
+    <div class="input-group">
+        <input type="text" id="prompt" placeholder="Enter your prompt..." />
+    </div>
+    <button onclick="startRequest()">Send Request</button>
+    <div id="response"></div>
+
+    <script>
+        function startRequest() {
+            const baseUrl = document.getElementById('baseUrl').value;
+            const promptValue = document.getElementById('prompt').value;
+
+            if (!baseUrl) {
+                alert('Please enter the base URL!');
+                return;
+            }
+
+            if (!promptValue) {
+                alert('Please enter a prompt!');
+                return;
+            }
+
+            document.getElementById('response').innerText = '';
+
+            fetch(`${baseUrl}/api/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'gemma3',
+                    prompt: promptValue
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let responseText = '';
+
+                reader.read().then(function processText({ done, value }) {
+                    if (done) {
+                        console.log('Stream finished');
+                        return;
+                    }
+
+                    const chunk = decoder.decode(value, { stream: true });
+
+                    try {
+                        const jsonData = JSON.parse(chunk);
+                        if (jsonData.response) {
+                            responseText += jsonData.response;
+                            document.getElementById('response').innerText = responseText;
+                        }
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                    }
+
+                    reader.read().then(processText);
+                });
+            })
+            .catch(err => console.error('Error in fetching stream:', err));
+        }
+    </script>
+</body>
+</html>
