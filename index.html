@@ -12,16 +12,17 @@
         }
 
         #response {
-            padding: 20px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            white-space: nowrap;
-            overflow: hidden;
-            font-size: 16px;
-            min-height: 150px;
-        }
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    min-height: 150px;
+    overflow-wrap: break-word;
+    overflow-y: auto;
+}
+
 
         button {
             padding: 10px 20px;
@@ -56,7 +57,7 @@
     <h1>Jay sus smoll api</h1>
 
     <div class="input-group">
-        <input type="text" id="baseUrl" placeholder="Enter the base URL..." />
+        <input type="text" id="baseUrl" value="http://localhost:11434" placeholder="Enter the base URL..." />
     </div>
     <div class="input-group">
         <input type="text" id="prompt" placeholder="Enter your prompt..." />
